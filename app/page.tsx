@@ -12,10 +12,32 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Users, DollarSign, Activity, Eye, Calendar } from "lucide-react"
+import { TrendingUp, Users, DollarSign, Activity, Eye, Calendar, Package, CalendarDays, FileText } from "lucide-react"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
+import { Area, AreaChart, Bar, BarChart, Line, LineChart } from "recharts"
 
-// Mock data
+// Mock data for dashboard
 const dashboardData = {
+  pendingSuppliers: [
+    { date: "Jan", count: 4 },
+    { date: "Feb", count: 6 },
+    { date: "Mar", count: 8 },
+    { date: "Apr", count: 5 },
+    { date: "May", count: 7 },
+    { date: "Jun", count: 9 },
+  ],
+  pendingEvents: [
+    { name: "Conference", status: "Pending", date: "2024-06-15", attendees: 120 },
+    { name: "Workshop", status: "Pending", date: "2024-06-20", attendees: 45 },
+    { name: "Seminar", status: "Pending", date: "2024-06-25", attendees: 80 },
+    { name: "Training", status: "Pending", date: "2024-06-30", attendees: 30 },
+  ],
+  relatedPosts: [
+    { title: "Industry Insights", views: 1200, engagement: 85 },
+    { title: "Market Analysis", views: 980, engagement: 72 },
+    { title: "Tech Trends", views: 1500, engagement: 90 },
+    { title: "Best Practices", views: 850, engagement: 68 },
+  ],
   stats: [
     {
       title: "Total Revenue",
@@ -173,6 +195,109 @@ export default function Dashboard() {
             </Dialog>
 
             <Button className="w-full">Export Data</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* New Dashboard Sections */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Pending Suppliers Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Pending Suppliers</CardTitle>
+                <CardDescription>Monthly supplier registration trends</CardDescription>
+              </div>
+              <Package className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer className="h-[200px]" config={{}}>
+              <LineChart data={dashboardData.pendingSuppliers}>
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#0ea5e9"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                />
+                <ChartTooltip />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+
+        {/* Pending Events Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Pending Events</CardTitle>
+                <CardDescription>Upcoming event attendance</CardDescription>
+              </div>
+              <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer className="h-[200px]" config={{}}>
+              <BarChart data={dashboardData.pendingEvents}>
+                <Bar dataKey="attendees" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <ChartTooltip />
+              </BarChart>
+            </ChartContainer>
+            <div className="mt-4 space-y-2">
+              {dashboardData.pendingEvents.map((event, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <span className="font-medium">{event.name}</span>
+                  <Badge variant="outline">{event.date}</Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Related Posts Section */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Related Posts</CardTitle>
+                <CardDescription>Content engagement metrics</CardDescription>
+              </div>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer className="h-[200px]" config={{}}>
+              <AreaChart data={dashboardData.relatedPosts}>
+                <defs>
+                  <linearGradient id="colorEngagement" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="engagement"
+                  stroke="#8b5cf6"
+                  fillOpacity={1}
+                  fill="url(#colorEngagement)"
+                />
+                <ChartTooltip />
+              </AreaChart>
+            </ChartContainer>
+            <div className="mt-4">
+              {dashboardData.relatedPosts.map((post, index) => (
+                <div key={index} className="flex items-center justify-between border-t py-2 text-sm">
+                  <span className="font-medium">{post.title}</span>
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <span>{post.views.toLocaleString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
